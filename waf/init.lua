@@ -14,7 +14,7 @@ function white_ip_check()
         if IP_WHITE_RULE ~= nil then
             for _,rule in pairs(IP_WHITE_RULE) do
                 if rule ~= "" and rulematch(WHITE_IP,rule,"jo") then
-                    log_record('White_IP',ngx.var_request_uri,"_","_")
+                    --log_record('White_IP',ngx.var_request_uri,"_","_")
                     return true
                 end
             end
@@ -59,11 +59,11 @@ end
 --deny cc attack
 function cc_attack_check()
     if config_cc_check == "on" then
-        local ATTACK_URI=ngx.var.uri
+        local ATTACK_URI = ngx.var.uri
         local CC_TOKEN = get_client_ip()..ATTACK_URI
         local limit = ngx.shared.limit
-        CCcount=tonumber(string.match(config_cc_rate,'(.*)/'))
-        CCseconds=tonumber(string.match(config_cc_rate,'/(.*)'))
+        local CCcount = tonumber(string.match(config_cc_rate,'(.*)/'))
+        local CCseconds = tonumber(string.match(config_cc_rate,'/(.*)'))
         local req,_ = limit:get(CC_TOKEN)
         if req then
             if req > CCcount then
@@ -127,9 +127,9 @@ function url_args_attack_check()
             local REQ_ARGS = ngx.req.get_uri_args()
             for key, val in pairs(REQ_ARGS) do
                 if type(val) == 'table' then
-                    ARGS_DATA = table.concat(val, " ")
+                    local ARGS_DATA = table.concat(val, " ")
                 else
-                    ARGS_DATA = val
+                    local ARGS_DATA = val
                 end
                 if ARGS_DATA and type(ARGS_DATA) ~= "boolean" and rule ~="" and rulematch(unescape(ARGS_DATA),rule,"jo") then
                     log_record('Deny_URL_Args',ngx.var.request_uri,"-",rule)
