@@ -3,4 +3,4 @@
 (phpmyadmin|jmx-console|admin-console|jmxinvokerservlet)
 java\.lang
 \.svn\/
-/(attachments|upimg|images|css|uploadfiles|html|uploads|templets|static|template|data|inc|forumdata|upload|includes|cache|avatar)/(\\w+).(php|jsp)
+/(attachments|upimg|images|css|uploadfiles|html|uploads|templets|static|template|data|inc|forumdata|upload|includes|cache|avatar)/[\w\/]+.(php|jsp)
