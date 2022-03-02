@@ -88,6 +88,7 @@ end
 
 --WAF Match
 function lib.ruleMatch(subject, rule)
+    print(subject, rule);
     if rule == nil or rule == "" then
         return false;
     end
@@ -96,6 +97,21 @@ function lib.ruleMatch(subject, rule)
         return false;
     end
     return true;
+end
+
+--WAF walkArge
+function lib.walkArge(argsTable, rule)
+    for _, val in pairs(argsTable) do
+        if type(val) == 'table' then
+            if lib.walkArge(val, rule) then
+                return true;
+            end
+        elseif val and type(val) ~= "boolean" and lib.ruleMatch(ngx.unescape_uri(val),rule) then
+            return true;
+        end
+    end
+
+    return false;
 end
 
 --WAF return

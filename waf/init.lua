@@ -67,7 +67,7 @@ end
 --deny cc attack
 local ccAttack = ChainList.newNode();
 ccAttack.setEnable(SWITCH_ON == config_cc_check);
-local cc_rate = string.gmatch('1/2','(%d+)/(%d+)');
+local cc_rate = string.gmatch(config_cc_rate,'(%d+)/(%d+)');
 local CCcount, CCseconds = cc_rate();
 ccAttack.CCcount = tonumber(CCcount);
 ccAttack.CCseconds = tonumber(CCseconds);
@@ -136,16 +136,10 @@ function urlArgsAttack.run()
         local ARGS_RULES = lib.get_rule('args.rule');
         local REQ_ARGS = ngx.req.get_uri_args();
         for _,rule in pairs(ARGS_RULES) do
-            for key, val in pairs(REQ_ARGS) do
-                local ARGS_DATA = val;
-                if type(ARGS_DATA) == 'table' then
-                    ARGS_DATA = table.concat(ARGS_DATA, " ");
-                end
-                if ARGS_DATA and type(ARGS_DATA) ~= "boolean" and lib.ruleMatch(ngx.unescape_uri(ARGS_DATA),rule) then
-                    lib.log_record('Deny_URL_Args',ngx.var.request_uri,"-",rule);
-                    lib.waf_output();
-                    return true;
-                end
+            if lib.walkArge(REQ_ARGS, rule) then
+                lib.log_record('Deny_URL_Args',ngx.var.request_uri,"-",rule);
+                lib.waf_output();
+                return true;
             end
         end
     end
@@ -180,19 +174,12 @@ function postAttack.run()
         local POST_RULES = lib.get_rule('post.rule');
         local POST_ARGS = ngx.req.get_post_args();
         for _,rule in pairs(POST_RULES) do
-            for key, val in pairs(POST_ARGS) do
-                local ARGS_DATA = val;
-                if type(ARGS_DATA) == 'table' then
-                    ARGS_DATA = table.concat(ARGS_DATA, " ");
-                end
-                if ARGS_DATA and type(ARGS_DATA) ~= "boolean" and lib.ruleMatch(ngx.unescape_uri(ARGS_DATA),rule) then
-                    lib.log_record('Deny_Post_Args',key.."->"..val,"-",rule);
-                    lib.waf_output();
-                    return true;
-                end
+            if lib.walkArge(POST_ARGS, rule) then
+                lib.log_record('Deny_Post_Args',key.."->"..val,"-",rule);
+                lib.waf_output();
+                return true;
             end
         end
-        return true;
     end
     return false;
 end
