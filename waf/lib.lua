@@ -101,6 +101,9 @@ end
 
 --WAF walkArge
 function lib.walkArge(argsTable, rule)
+    if argsTable == nil then
+        return false;
+    end
     for _, val in pairs(argsTable) do
         if type(val) == 'table' then
             if lib.walkArge(val, rule) then
